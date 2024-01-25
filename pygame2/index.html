@@ -25,6 +25,14 @@
         </script>
 
         <title>Pygame Test</title>
+
+        <!-- bokeh scripts -->
+        <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.2.2.js"></script>
+        <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.2.2.min.js"></script>
+        <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.2.2.min.js"></script>
+        <script type="text/javascript">
+            Bokeh.set_log_level("info");
+        </script>
     </head>
 
     <body>
@@ -37,10 +45,13 @@
                 <a href="/">
                     <img src="./assets/logo.png" class="logo" />
                 </a>
-                <a class="title" href="" style="color: #f0ab3c">Pygame Test</a>
+                <a class="title" href="" style="color: #f0ab3c">Pygame Test 2</a>
             </div>
         </nav>
 
-        <script type="py" src="./main.py" config="./pyscript.toml"></script>
+        <section class="pyscript">
+            <div id="simple_app"></div>
+            <script type="py" src="./main.py" config="./pyscript.toml"></script>
+        </section>
     </body>
 </html>
