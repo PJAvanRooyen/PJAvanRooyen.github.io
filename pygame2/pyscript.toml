@@ -1,2 +1,2 @@
-name = "Streaming in Panel"
-packages = ["bokeh==3.2.2", "numpy", "pandas", "panel"]
+name = "Pygame test"
+packages = ["bokeh==3.2.2", "numpy", "pygame", "asyncio", "sys"]

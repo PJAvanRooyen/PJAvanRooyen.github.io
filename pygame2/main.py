@@ -1,45 +1,96 @@
-import panel as pn
-import numpy as np
-import pandas as pd
+# import sys module
+import pygame
+import sys
+import asyncio
 
-from bokeh.models import ColumnDataSource
-from bokeh.plotting import figure
+# pygame.init() will initialize all
+# imported module
+pygame.init()
 
-df = pd.DataFrame(np.random.randn(10, 4), columns=list('ABCD')).cumsum()
+clock = pygame.time.Clock()
 
-rollover = pn.widgets.IntInput(name='Rollover', value=15)
-follow = pn.widgets.Checkbox(name='Follow', value=True, align='end')
+# it will display on screen
+screen = pygame.display.set_mode([600, 500])
 
-tabulator = pn.widgets.Tabulator(df, height=450, width=400).servable(target='table')
+# basic font for user typed
+base_font = pygame.font.Font(None, 32)
 
-def color_negative_red(val):
-    """
-    Takes a scalar and returns a string with
-    the css property `'color: red'` for negative
-    strings, black otherwise.
-    """
-    color = 'red' if val < 0 else 'green'
-    return 'color: %s' % color
+# create rectangle
+input_rect = pygame.Rect(200, 200, 140, 32)
 
-tabulator.style.applymap(color_negative_red)
+# color_active stores color(lightskyblue3) which
+# gets active when input box is clicked by user
+color_active = pygame.Color('lightskyblue3')
 
-p = figure(height=450, width=600)
+# color_passive store color(chartreuse4) which is
+# color of input box.
+color_passive = pygame.Color('chartreuse4')
+color = color_passive
 
-cds = ColumnDataSource(data=ColumnDataSource.from_df(df))
 
-p.line('index', 'A', source=cds, line_color='red')
-p.line('index', 'B', source=cds, line_color='green')
-p.line('index', 'C', source=cds, line_color='blue')
-p.line('index', 'D', source=cds, line_color='purple')
+async def main():
+    user_text = ''
+    active = False
+    while True:
+        for event in pygame.event.get():
 
-def stream():
-    data = df.iloc[-1] + np.random.randn(4)
-    tabulator.stream(data, rollover=rollover.value, follow=follow.value)
-    value = {k: [v] for k, v in tabulator.value.iloc[-1].to_dict().items()}
-    value['index'] = [tabulator.value.index[-1]]
-    cds.stream(value)
+            # if user types QUIT then the screen will close
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
 
-cb = pn.state.add_periodic_callback(stream, 200)
+            if event.type == pygame.MOUSEBUTTONDOWN:
 
-pn.pane.Bokeh(p).servable(target='plot')
-pn.Row(cb.param.period, rollover, follow, width=400).servable(target='controls')
+                if input_rect.collidepoint(event.pos):
+                    active = True
+                else:
+                    active = False
+
+            if event.type == pygame.KEYDOWN:
+                print(event.key)
+                # Check for backspace
+                if event.key == pygame.K_BACKSPACE:
+
+                    # get text input from 0 to -1 i.e. end.
+                    user_text = user_text[:-1]
+                elif event.key == 13 or event.key == 1073741912:
+                    if user_text == "ciao":
+                        user_text = "Ciao anche a te"
+
+                # Unicode standard is used for string
+                # formation
+                else:
+                    user_text += event.unicode
+
+        # it will set background color of screen
+        screen.fill((255, 255, 255))
+
+        if active:
+            color = color_active
+        else:
+            color = color_passive
+
+        # draw rectangle and argument passed which should
+        # be on screen
+        pygame.draw.rect(screen, color, input_rect)
+
+        text_surface = base_font.render(user_text, True, (255, 255, 255))
+
+        # render at position stated in arguments
+        screen.blit(text_surface, (input_rect.x + 5, input_rect.y + 5))
+
+        # set width of textfield so that text cannot get
+        # outside of user's text input
+        input_rect.w = max(100, text_surface.get_width() + 10)
+
+        # display.flip() will update only a portion of the
+        # screen to updated, not full area
+        pygame.display.flip()
+
+        # clock.tick(60) means that for every second at most
+        # 60 frames should be passed.
+        clock.tick(60)
+        await asyncio.sleep(0)
+
+
+asyncio.run(main())
