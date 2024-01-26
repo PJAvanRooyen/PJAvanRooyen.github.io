@@ -1,2 +1,0 @@
-name = "Pygame test"
-packages = ["bokeh==3.2.2"]
